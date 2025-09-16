@@ -1,0 +1,35 @@
+{
+  "medicine_name": "Augmentin 625 Duo Tablet",
+  "price": 223.42,
+  "prescription_required": false,
+  "manufacturer": "Glaxo SmithKline Pharmaceuticals Ltd",
+  "type": "allopathy",
+  "packaging": "strip of 10 tablets",
+  "composition": [
+    {
+      "name": "Amoxycillin",
+      "strength": "500mg"
+    },
+    {
+      "name": "Clavulanic Acid",
+      "strength": "125mg"
+    }
+  ],
+  "substitutes": [
+    "Penciclav 500 mg/125 mg Tablet",
+    "Moxikind-CV 625 Tablet",
+    "Moxiforce-CV 625 Tablet",
+    "Fightox 625 Tablet",
+    "Novamox CV 625mg Tablet"
+  ],
+  "side_effects": [
+    "Vomiting",
+    "Nausea",
+    "Diarrhea"
+  ],
+  "uses": [
+    "Treatment of Bacterial infections"
+  ],
+  "habit_forming": "No",
+  "therapeutic_class": "ANTI INFECTIVES"
+}
