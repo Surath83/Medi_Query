@@ -21,6 +21,8 @@ async function connectDB() {
 
 /**
  * 🔎 Suggestions endpoint
+ * Returns only medicine name
+ * Example: http://10.233.33.102:5000/suggestions?q=Augm
  */
 app.get("/suggestions", async (req, res) => {
   const query = req.query.q;
@@ -31,22 +33,10 @@ app.get("/suggestions", async (req, res) => {
     const results = await collection
       .find({ name: regex })
       .limit(6)
-      .project({
-        name: 1,
-        manufacturer_name: 1,
-        "price(₹)": 1, // include original price field
-        short_composition1: 1,
-        short_composition2: 1,
-      })
+      .project({ name: 1, _id: 0 }) // ✅ only return name, no _id, no price
       .toArray();
 
-    // Rename price(₹) to price
-    const formatted = results.map((item) => ({
-      ...item,
-      price: item["price(₹)"],
-    }));
-
-    res.json(formatted);
+    res.json(results);
   } catch (err) {
     console.error("❌ Error fetching suggestions:", err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -55,6 +45,8 @@ app.get("/suggestions", async (req, res) => {
 
 /**
  * 💊 Medicine details endpoint
+ * Returns full medicine info + substitutes
+ * Example: http://10.233.33.102:5000/medicine?name=Augmentin%20625%20Duo%20Tablet
  */
 app.get("/medicine", async (req, res) => {
   const name = req.query.name;
@@ -79,6 +71,11 @@ app.get("/medicine", async (req, res) => {
           use2: 1,
           use3: 1,
           use4: 1,
+          substitute0: 1,
+          substitute1: 1,
+          substitute2: 1,
+          substitute3: 1,
+          substitute4: 1,
           "Habit Forming": 1,
           "Therapeutic Class": 1,
         },
@@ -121,7 +118,6 @@ app.get("/similar", async (req, res) => {
       })
       .toArray();
 
-    // Rename price(₹) to price
     const formatted = similarMeds.map((item) => ({
       ...item,
       price: item["price(₹)"],

@@ -1,10 +1,10 @@
 // config.js
-// eslint-disable-next-line no-unused-vars
-import Constants from "expo-constants";
+// Handles API_BASE for dev (LAN IP) and production
 
 const ENV = {
   dev: {
-    API_BASE: process.env.API_BASE || "http://172.20.17.102:5000",
+    // use LAN_IP from .env or fallback
+    API_BASE: "http://10.233.33.102:5000", // 👈 replace with your LAN IPv4 from ipconfig
   },
   prod: {
     API_BASE: "https://your-production-domain.com", // fallback in prod
@@ -13,9 +13,9 @@ const ENV = {
 
 const getEnvVars = () => {
   if (__DEV__) {
-    return ENV.dev;
+    return ENV.dev; // running locally
   }
-  return ENV.prod;
+  return ENV.prod; // production build
 };
 
 export default getEnvVars();
