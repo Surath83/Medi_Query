@@ -11,6 +11,7 @@
     "lint": "expo lint"
   },
   "dependencies": {
+    "@clerk/clerk-expo": "^2.15.0",
     "@expo/vector-icons": "^15.0.2",
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",
@@ -24,6 +25,7 @@
     "expo-image": "~3.0.8",
     "expo-linking": "~8.0.8",
     "expo-router": "^6.0.6",
+    "expo-secure-store": "^15.0.7",
     "expo-splash-screen": "~31.0.10",
     "expo-status-bar": "~3.0.8",
     "expo-symbols": "~1.0.7",
