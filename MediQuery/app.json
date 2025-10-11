@@ -15,8 +15,6 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.surath83.mediquery",
-      "googleServicesFile": "./GoogleService-Info.plist",
       "icon": "./assets/images/ios-icon.png",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "We need your location to show nearby pharmacies."
@@ -29,8 +27,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.surath83.mediquery",
-      "googleServicesFile": "./google-services.json",
+      "package": "com.surath83.mediquery"
     },
     "web": {
       "output": "static",
@@ -50,16 +47,7 @@
           }
         }
       ],
-      "expo-web-browser",
-      ["expo-build-properties",
-      {
-      "ios": {
-        "useFrameworks": "static"
-      },
-      }
-    ],
-      "@react-native-firebase/app",
-      "@react-native-firebase/auth"
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,

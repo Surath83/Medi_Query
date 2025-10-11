@@ -5,8 +5,8 @@
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint"
   },
@@ -14,8 +14,6 @@
     "@expo/vector-icons": "^15.0.2",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native-community/datetimepicker": "8.4.4",
-    "@react-native-firebase/app": "^23.4.0",
-    "@react-native-firebase/auth": "^23.4.0",
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
@@ -26,7 +24,6 @@
     "expo-av": "~16.0.7",
     "expo-background-fetch": "~14.0.7",
     "expo-blur": "^15.0.7",
-    "expo-build-properties": "~1.0.9",
     "expo-calendar": "^15.0.7",
     "expo-constants": "~18.0.8",
     "expo-dev-client": "~6.0.13",
@@ -46,7 +43,6 @@
     "expo-task-manager": "~14.0.7",
     "expo-web-browser": "~15.0.8",
     "express": "^5.1.0",
-    "firebase": "^12.3.0",
     "mongodb": "^6.19.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
@@ -71,9 +67,7 @@
   "expo": {
     "doctor": {
       "reactNativeDirectoryCheck": {
-        "exclude": [
-          "react-native-geolocation-service"
-        ]
+        "exclude": ["react-native-geolocation-service"]
       }
     }
   },
