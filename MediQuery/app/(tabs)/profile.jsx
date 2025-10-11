@@ -17,14 +17,10 @@ import {
 import { BlurView } from "expo-blur";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Profile_Card from "@/components/profile_card";
-import { useRouter } from "expo-router";
-import { auth } from "../../firebase"; // Adjust the path if necessary
 
 export default function Profile({ name }) {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
-  const router = useRouter();
-  const [currentUser, setCurrentUser] = useState(null);
 
   const [user, setUser] = useState({
     name: name || "John",
@@ -37,13 +33,6 @@ export default function Profile({ name }) {
   const [editModalVisible, setEditModalVisible] = useState(false);
 
   const genderOptions = ["male", "female", "prefer not to say"];
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setCurrentUser(user);
-    });
-    return unsubscribe;
-  }, []);
 
   // Load stored profile
   useEffect(() => {
@@ -74,80 +63,34 @@ export default function Profile({ name }) {
   const handleChange = (key, value) =>
     setUser((prev) => ({ ...prev, [key]: value }));
 
-  const handleLogout = async () => {
-    try {
-      await auth.signOut();
-      router.replace("/(auth)");
-    } catch (error) {
-      Alert.alert("Error", "Failed to logout. Please try again.");
-    }
-  };
-
   return (
     <KeyboardAvoidingView
       style={[styles.container, isDark ? styles.darkBg : styles.lightBg]}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ScrollView contentContainerStyle={{ padding: 16 }}>
-        {currentUser ? (
-          <>
-            <Text
-              style={[
-                styles.header,
-                isDark ? styles.headerDark : styles.headerLight,
-              ]}
-            >
-              {user.name}&#39;s Profile
-            </Text>
+        <Text
+          style={[
+            styles.header,
+            isDark ? styles.headerDark : styles.headerLight,
+          ]}
+        >
+          {user.name}&#39;s Profile
+        </Text>
 
-            <Profile_Card {...user} visible={true} />
+        <Profile_Card {...user} visible={true} />
 
-            {/* Edit Button */}
-            <Pressable
-              style={[styles.editButton, isDark && styles.editButtonDark]}
-              onPress={() => setEditModalVisible(true)}
-            >
-              <Text
-                style={[styles.editButtonText, isDark && styles.editButtonTextDark]}
-              >
-                Edit Profile
-              </Text>
-            </Pressable>
-            {/* Logout Button */}
-            <Pressable
-              style={[styles.logoutButton, isDark && styles.logoutButtonDark]}
-              onPress={handleLogout}
-            >
-              <Text
-                style={[
-                  styles.logoutButtonText,
-                  isDark && styles.logoutButtonTextDark,
-                ]}
-              >
-                Logout
-              </Text>
-            </Pressable>
-          </>
-        ) : (
-          <View style={styles.loggedOutContainer}>
-            <Text style={[styles.loggedOutText, isDark && styles.loggedOutTextDark]}>
-              Please log in to view your profile.
-            </Text>
-            <Pressable
-              style={[styles.loginButton, isDark && styles.loginButtonDark]}
-              onPress={() => router.replace("/(auth)")}
-            >
-              <Text
-                style={[
-                  styles.loginButtonText,
-                  isDark && styles.loginButtonTextDark,
-                ]}
-              >
-                Login
-              </Text>
-            </Pressable>
-          </View>
-        )}
+        {/* Edit Button */}
+        <Pressable
+          style={[styles.editButton, isDark && styles.editButtonDark]}
+          onPress={() => setEditModalVisible(true)}
+        >
+          <Text
+            style={[styles.editButtonText, isDark && styles.editButtonTextDark]}
+          >
+            Edit Profile
+          </Text>
+        </Pressable>
       </ScrollView>
 
       {/* Edit Modal */}
@@ -415,53 +358,4 @@ const styles = StyleSheet.create({
   cancelButtonDark: { backgroundColor: "#F87171" },
   cancelButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
   cancelButtonTextDark: { color: "#fff" },
-  logoutButton: {
-    alignSelf: "center",
-    minWidth: 120,
-    maxWidth: 160,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: "#EF4444",
-    borderRadius: 12,
-    alignItems: "center",
-    marginTop: 12,
-  },
-  logoutButtonDark: {
-    backgroundColor: "#F87171",
-  },
-  logoutButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  logoutButtonTextDark: { color: "#fff" },
-  loggedOutContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  loggedOutText: {
-    fontSize: 18,
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  loggedOutTextDark: { color: "#E5E7EB" },
-  loginButton: {
-    minWidth: 120,
-    maxWidth: 160,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: "#0EA5A4",
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  loginButtonDark: {
-    backgroundColor: "#0EA5A4",
-  },
-  loginButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  loginButtonTextDark: { color: "#fff" },
 });
