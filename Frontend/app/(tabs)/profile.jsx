@@ -18,16 +18,18 @@ import { BlurView } from "expo-blur";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Profile_Card from "@/components/profile_card";
 import { useRouter } from "expo-router";
+import { useUser, useAuth } from "@clerk/clerk-expo";
 
-export default function Profile({ name }) {
+export default function Profile() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
   const dynamicStyles = styles(isDark);
   const router = useRouter();
-  const [currentUser, setCurrentUser] = useState(null);
+  const { user } = useUser();
+  const { signOut } = useAuth();
 
-  const [user, setUser] = useState({
-    name: name || "John",
+  const [profileData, setProfileData] = useState({
+    name: user?.firstName || "John",
     age: 25,
     height: 160,
     weight: 60,
@@ -38,20 +40,18 @@ export default function Profile({ name }) {
 
   const genderOptions = ["male", "female", "prefer not to say"];
 
-  // Firebase auth state
-  // useEffect(() => {
-  //   const unsubscribe = auth.onAuthStateChanged((user) => {
-  //     setCurrentUser(user);
-  //   });
-  //   return unsubscribe;
-  // }, []);
+  useEffect(() => {
+    if (user) {
+      setProfileData((prevData) => ({ ...prevData, name: user.firstName || "John" }));
+    }
+  }, [user]);
 
   // Load stored profile
   useEffect(() => {
     (async () => {
       try {
         const savedUser = await AsyncStorage.getItem("userProfile");
-        if (savedUser) setUser(JSON.parse(savedUser));
+        if (savedUser) setProfileData(JSON.parse(savedUser));
       } catch (err) {
         console.error("Error loading user profile:", err);
       }
@@ -61,7 +61,7 @@ export default function Profile({ name }) {
   // Save profile changes
   const saveProfile = async () => {
     try {
-      await AsyncStorage.setItem("userProfile", JSON.stringify(user));
+      await AsyncStorage.setItem("userProfile", JSON.stringify(profileData));
       setEditModalVisible(false);
       Alert.alert("Success", "Profile saved successfully!");
     } catch (err) {
@@ -70,17 +70,13 @@ export default function Profile({ name }) {
     }
   };
 
-  // const handleChange = (key, value) =>
-  //   setUser((prev) => ({ ...prev, [key]: value }));
+  const handleLogout = async () => {
+    await signOut();
+  };
 
-  // const handleLogout = async () => {
-  //   try {
-  //     await auth.signOut();
-  //     router.replace("/(auth)");
-  //   } catch (_error) {
-  //     Alert.alert("Error", "Failed to logout. Please try again.");
-  //   }
-  // };
+  const handleChange = (field, value) => {
+    setProfileData((prevData) => ({ ...prevData, [field]: value }));
+  };
 
   return (
     <KeyboardAvoidingView
@@ -89,11 +85,11 @@ export default function Profile({ name }) {
     >
       <View style={{ flexGrow: 1, padding: 16, paddingBottom: 60 }} >
       <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 16 }}>
-        {currentUser ? (
+        {user ? (
           <>
-            <Text style={dynamicStyles.header}>{user.name}&#39;s Profile</Text>
+            <Text style={dynamicStyles.header}>{profileData.name}&#39;s Profile</Text>
 
-            <Profile_Card {...user} visible={true} />
+            <Profile_Card {...profileData} visible={true} />
 
             {/* Edit Button */}
             <Pressable
@@ -148,7 +144,7 @@ export default function Profile({ name }) {
               <Text style={dynamicStyles.label}>Name</Text>
               <TextInput
                 style={dynamicStyles.input}
-                value={user.name}
+                value={profileData.name}
                 editable={false}
               />
 
@@ -156,7 +152,7 @@ export default function Profile({ name }) {
               <Text style={dynamicStyles.label}>Age</Text>
               <TextInput
                 style={dynamicStyles.input}
-                value={String(user.age)}
+                value={String(profileData.age)}
                 keyboardType="numeric"
                 onChangeText={(text) =>
                   handleChange("age", parseInt(text) || 0)
@@ -167,7 +163,7 @@ export default function Profile({ name }) {
               <Text style={dynamicStyles.label}>Height (cm)</Text>
               <TextInput
                 style={dynamicStyles.input}
-                value={String(user.height)}
+                value={String(profileData.height)}
                 keyboardType="numeric"
                 onChangeText={(text) =>
                   handleChange("height", parseFloat(text) || 0)
@@ -178,7 +174,7 @@ export default function Profile({ name }) {
               <Text style={dynamicStyles.label}>Weight (kg)</Text>
               <TextInput
                 style={dynamicStyles.input}
-                value={String(user.weight)}
+                value={String(profileData.weight)}
                 keyboardType="numeric"
                 onChangeText={(text) =>
                   handleChange("weight", parseFloat(text) || 0)
@@ -189,7 +185,7 @@ export default function Profile({ name }) {
               <Text style={dynamicStyles.label}>Gender</Text>
               <View style={dynamicStyles.genderContainer}>
                 {genderOptions.map((option) => {
-                  const selected = user.gender === option;
+                  const selected = profileData.gender === option;
                   return (
                     <Pressable
                       key={option}
@@ -279,7 +275,7 @@ const styles = (isDark) => {
       marginVertical: 6,
     },
     buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-    editButton: { backgroundColor: colors.buttonPrimary, alignSelf: "flex-end", minWidth: 120, maxWidth: 160 },
+    editButton: { backgroundColor: colors.buttonPrimary, alignSelf: "center", minWidth: 120, maxWidth: 160 },
     loginButton: { backgroundColor: colors.buttonPrimary, minWidth: 120, maxWidth: 160 },
     logoutButton: { backgroundColor: colors.buttonDanger, alignSelf: "center", minWidth: 120, maxWidth: 160 },
     saveButton: { backgroundColor: colors.buttonSecondary },
