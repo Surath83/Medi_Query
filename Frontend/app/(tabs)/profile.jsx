@@ -18,18 +18,18 @@ import { BlurView } from "expo-blur";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Profile_Card from "@/components/profile_card";
 import { useRouter } from "expo-router";
-import { useUser, useAuth } from "@clerk/clerk-expo";
+// import { useUser, useAuth } from "@clerk/clerk-expo";
 
 export default function Profile() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
   const dynamicStyles = styles(isDark);
   const router = useRouter();
-  const { user } = useUser();
-  const { signOut } = useAuth();
+  // const { user } = useUser();
+  // const { signOut } = useAuth();
 
   const [profileData, setProfileData] = useState({
-    name: user?.firstName || "John",
+    name: "John",
     age: 25,
     height: 160,
     weight: 60,
@@ -40,11 +40,11 @@ export default function Profile() {
 
   const genderOptions = ["male", "female", "prefer not to say"];
 
-  useEffect(() => {
-    if (user) {
-      setProfileData((prevData) => ({ ...prevData, name: user.firstName || "John" }));
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user) {
+  //     setProfileData((prevData) => ({ ...prevData, name: user.firstName || "John" }));
+  //   }
+  // }, [user]);
 
   // Load stored profile
   useEffect(() => {
@@ -70,9 +70,9 @@ export default function Profile() {
     }
   };
 
-  const handleLogout = async () => {
-    await signOut();
-  };
+  // const handleLogout = async () => {
+  //   await signOut();
+  // };
 
   const handleChange = (field, value) => {
     setProfileData((prevData) => ({ ...prevData, [field]: value }));
@@ -85,7 +85,7 @@ export default function Profile() {
     >
       <View style={{ flexGrow: 1, padding: 16, paddingBottom: 60 }} >
       <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 16 }}>
-        {user ? (
+        
           <>
             <Text style={dynamicStyles.header}>{profileData.name}&#39;s Profile</Text>
 
@@ -100,26 +100,14 @@ export default function Profile() {
             </Pressable>
 
             {/* Logout Button */}
-            <Pressable
+            {/* <Pressable
               style={[dynamicStyles.button, dynamicStyles.logoutButton]}
               onPress={handleLogout}
             >
               <Text style={dynamicStyles.buttonText}>Logout</Text>
-            </Pressable>
+            </Pressable> */}
           </>
-        ) : (
-          <View style={dynamicStyles.loggedOutContainer}>
-            <Text style={dynamicStyles.loggedOutText}>
-              Please log in to view your profile.
-            </Text>
-            <Pressable
-              style={[dynamicStyles.button, dynamicStyles.loginButton]}
-              onPress={() => router.push("/sign-in")}
-            >
-              <Text style={dynamicStyles.buttonText}>Login</Text>
-            </Pressable>
-          </View>
-        )}
+        
       </ScrollView>
 
       {/* Edit Modal */}
