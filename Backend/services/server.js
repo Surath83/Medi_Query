@@ -32,7 +32,7 @@ app.post('/get_medical_shops', async (req, res) => {
     return res.status(400).json({ error: 'Latitude and longitude required' })
   }
 
-  const RADIUS = 5000
+  const RADIUS = 10000
   const MAX_RESULTS = 40
 
   const query = `[out:json][timeout:25];
