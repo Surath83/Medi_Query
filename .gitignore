@@ -1,4 +1,6 @@
 Frontend/.expo/
 Frontend/.expo-shared/
 Frontend/node_modules/
+Frontend/.vscode/
 Frontend/expo-env.d.ts
+Backend/node_modules/
