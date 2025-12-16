@@ -1,6 +1,9 @@
 # Node dependencies
 node_modules/
 
+.cursor/
+.expo-shared/
+
 # Expo
 .expo/
 dist/
