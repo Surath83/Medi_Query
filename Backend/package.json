@@ -21,7 +21,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "express": "^4.19.2",
+    "express": "^4.22.1",
     "mongodb": "^6.8.0",
     "node-fetch": "^3.3.2"
   },
