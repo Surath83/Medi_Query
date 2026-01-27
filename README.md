@@ -80,7 +80,6 @@ MediQuery/
 │   └── utils/
 │
 ├── services/                   # Backend & Configurations
-│   ├── config.js               # MongoDB Connection Setup
 │   ├── server.js               # Express Server (API handling)
 │   └── .env                    # Environment Variables
 │
@@ -164,12 +163,14 @@ npx react-native run-ios
 <h3>Start Metro Bundler</h3>
 <pre><code>
 npx react-native start
+or
+npx expo start
 </code></pre>
 
 <h3>Run Backend (Node.js)</h3>
 <pre><code>
 cd services
-npm run dev   # using nodemon
+node server.js
 </code></pre>
 
 <hr>
