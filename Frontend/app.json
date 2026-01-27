@@ -16,7 +16,6 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.surath83.mediquery",
-      "googleServicesFile": "./GoogleService-Info.plist",
       "icon": "./assets/images/ios-icon.png",
       "jsEngine": "hermes",
       "infoPlist": {
@@ -31,7 +30,6 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.surath83.mediquery",
-      "googleServicesFile": "./google-services.json",
       "jsEngine": "hermes"
     },
     "web": {

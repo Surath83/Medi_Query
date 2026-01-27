@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   View,
   Text,
@@ -14,7 +14,7 @@ import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
-import config from "../../config"; // contains API_BASE = "https://your-api-url.com"
+import config from "../../config";
 
 const DARK_MAP_STYLE = [
   { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
@@ -46,32 +46,46 @@ export default function Maps() {
   const [loading, setLoading] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState(null);
 
+  const apiAbortRef = useRef(null);
+  const debounceRef = useRef(null);
+
   const API_URL = `${config.API_BASE}/get_medical_shops`;
 
+  useEffect(() => {
+    return () => {
+      if (apiAbortRef.current) apiAbortRef.current.abort();
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, []);
+
   const fetchPrivateAPI = useCallback(async (lat, lon) => {
+    // Abort previous API call
+    if (apiAbortRef.current) {
+      apiAbortRef.current.abort();
+    }
+
+    const controller = new AbortController();
+    apiAbortRef.current = controller;
+
     setLoading(true);
+
     try {
-      console.log("📍 Sending coordinates to API:", { lat, lon });
+      console.log("📍 Sending coordinates:", { lat, lon });
 
       const res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          latitude: lat,
-          longitude: lon,
-        }),
+        body: JSON.stringify({ latitude: lat, longitude: lon }),
+        signal: controller.signal,
       });
 
       if (!res.ok) {
         const text = await res.text();
-        console.error("❌ API error response:", text);
-        throw new Error(`API responded with status ${res.status}`);
+        throw new Error(`API ${res.status}: ${text}`);
       }
 
       const json = await res.json();
-      console.log("✅ Fetched nearby shops:", json);
 
-      // Expected response: [{ id, lat, lon, name, address }]
       const fetchedPlaces = (json || []).map((p, idx) => ({
         id: p.id || idx,
         lat: p.lat,
@@ -84,11 +98,10 @@ export default function Maps() {
 
       setPlaces(fetchedPlaces);
     } catch (err) {
-      console.error("Private API fetch error (details):", err);
-      Alert.alert(
-        "Server Error",
-        "Could not fetch nearby medical shops. Please check your connection or try again."
-      );
+      if (err.name !== "AbortError") {
+        console.error("API error:", err);
+        Alert.alert("Server Error", "Could not fetch nearby medical shops.");
+      }
     } finally {
       setLoading(false);
     }
@@ -96,34 +109,43 @@ export default function Maps() {
 
   // --- Get Location and Fetch Data ---
   const getLocationAndFetch = useCallback(async () => {
-    try {
-      setPlaces([]); // Clear old markers before new call
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert(
-          "Permission Required",
-          "Location permission is required to find nearby medical shops."
-        );
-        return;
-      }
-
-      const loc = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
-      });
-      const { latitude, longitude } = loc.coords;
-
-      setRegion({
-        latitude,
-        longitude,
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.05,
-      });
-
-      await fetchPrivateAPI(latitude, longitude);
-    } catch (err) {
-      console.error("Location error:", err);
-      Alert.alert("Error", "Could not get location. Please try again.");
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
     }
+
+    debounceRef.current = setTimeout(async () => {
+      try {
+        setPlaces([]);
+
+        const { status } = await Location.requestForegroundPermissionsAsync();
+
+        if (status !== "granted") {
+          Alert.alert(
+            "Permission Required",
+            "Location permission is required.",
+          );
+          return;
+        }
+
+        const loc = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.High,
+        });
+
+        const { latitude, longitude } = loc.coords;
+
+        setRegion({
+          latitude,
+          longitude,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
+        });
+
+        fetchPrivateAPI(latitude, longitude);
+      } catch (err) {
+        console.error("Location error:", err);
+        Alert.alert("Error", "Could not get location.");
+      }
+    }, 500); // ⏱️ debounce delay
   }, [fetchPrivateAPI]);
 
   useEffect(() => {
@@ -139,7 +161,7 @@ export default function Maps() {
         ? `http://maps.apple.com/?daddr=${lat},${lon}&dirflg=d`
         : `geo:0,0?q=${lat},${lon}(${label})`;
     Linking.openURL(scheme).catch(() =>
-      Alert.alert("Error", "Could not open maps app.")
+      Alert.alert("Error", "Could not open maps app."),
     );
   };
 
@@ -276,6 +298,6 @@ const styles = StyleSheet.create({
   lightBg: { backgroundColor: "#F0FDF4" },
   headerLight: { color: "#1F2937" },
   headerDark: { color: "#F3F4F6" },
-  refreshBtn: { marginRight: 4 },
+  refreshBtn: { marginRight: 8, paddingVertical: 2 },
   refreshBtnLoading: { opacity: 0.6 },
 });

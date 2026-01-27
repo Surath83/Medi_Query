@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -17,8 +17,10 @@ import {
 } from "react-native";
 import { SvgXml } from "react-native-svg";
 import config from "../config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const API_BASE = config.API_BASE;
+const HISTORY_KEY = "MED_SEARCH_HISTORY";
 
 // Refresh icon SVG
 const refreshSvg = (color = "#000") => `
@@ -41,9 +43,13 @@ export default function Med() {
   const [loadingSearch, setLoadingSearch] = useState(false);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [selectedMedicine, setSelectedMedicine] = useState(null);
-
+  const [history, setHistory] = useState([""]);
   const spinAnim = useRef(new Animated.Value(0)).current;
   const [iconActive, setIconActive] = useState(false);
+
+  const suggestionDebounceRef = useRef(null);
+  const searchAbortRef = useRef(null);
+  const suggestionAbortRef = useRef(null);
 
   const colors = {
     background: "transparent",
@@ -57,6 +63,42 @@ export default function Med() {
     button: "#0EA5A4",
     placeholder: "#94A3B8",
     overlay: "rgba(0,0,0,0.7)",
+  };
+  useEffect(() => {
+    return () => {
+      if (searchAbortRef.current) searchAbortRef.current.abort();
+      if (suggestionAbortRef.current) suggestionAbortRef.current.abort();
+      if (suggestionDebounceRef.current)
+        clearTimeout(suggestionDebounceRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    const loadHistory = async () => {
+      try {
+        const stored = await AsyncStorage.getItem(HISTORY_KEY);
+        if (stored) setHistory(JSON.parse(stored));
+      } catch (e) {
+        console.error("History load failed", e);
+      }
+    };
+    loadHistory();
+  }, []);
+
+  useEffect(() => {
+    AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  }, [history]);
+
+  const updateHistory = (name) => {
+    if (!name) return;
+
+    setHistory((prev) => {
+      const filtered = prev.filter(
+        (item) => item.toLowerCase() !== name.toLowerCase(),
+      );
+      const updated = [...filtered, name];
+      return updated.slice(-5);
+    });
   };
 
   const handleReset = () => {
@@ -88,15 +130,31 @@ export default function Med() {
 
   const handleSearch = async () => {
     if (!medicineName.trim()) return;
+
+    // Abort previous search
+    if (searchAbortRef.current) {
+      searchAbortRef.current.abort();
+    }
+
+    const controller = new AbortController();
+    searchAbortRef.current = controller;
+
     try {
       setLoadingSearch(true);
+
       const res = await fetch(
-        `${API_BASE}/medicine?name=${encodeURIComponent(medicineName)}`
+        `${API_BASE}/medicine?name=${encodeURIComponent(medicineName)}`,
+        { signal: controller.signal },
       );
+
+      if (!res.ok) throw new Error("Medicine fetch failed");
+
       const json = await res.json();
       setSearchResult(json || null);
+      updateHistory(medicineName.trim());
 
       let subs = [];
+
       if (json) {
         const substituteKeys = [
           "substitute0",
@@ -105,62 +163,88 @@ export default function Med() {
           "substitute3",
           "substitute4",
         ];
+
         for (const key of substituteKeys) {
-          if (json[key]) {
-            try {
-              const subRes = await fetch(
-                `${API_BASE}/medicine?name=${encodeURIComponent(json[key])}`
-              );
-              if (subRes.ok) {
-                const subJson = await subRes.json();
-                subs.push(subJson || { name: json[key] });
-              } else {
-                subs.push({ name: json[key] });
-              }
-            } catch {
+          if (!json[key]) continue;
+
+          try {
+            const subRes = await fetch(
+              `${API_BASE}/medicine?name=${encodeURIComponent(json[key])}`,
+              { signal: controller.signal },
+            );
+
+            if (subRes.ok) {
+              const subJson = await subRes.json();
+              subs.push(subJson || { name: json[key] });
+            } else {
+              subs.push({ name: json[key] });
+            }
+          } catch (err) {
+            if (err.name !== "AbortError") {
               subs.push({ name: json[key] });
             }
           }
         }
+
         subs.sort((a, b) => {
-          const priceA = isNaN(parseFloat(a?.price))
-            ? -Infinity
-            : parseFloat(a.price);
-          const priceB = isNaN(parseFloat(b?.price))
-            ? -Infinity
-            : parseFloat(b.price);
+          const priceA = parseFloat(a?.price) || Infinity;
+          const priceB = parseFloat(b?.price) || Infinity;
           return priceA - priceB;
         });
       }
+
       setSimilarMeds(subs);
     } catch (err) {
-      console.error("Error fetching medicine:", err);
-      setSimilarMeds([]);
+      if (err.name !== "AbortError") {
+        console.error("Search error:", err.message);
+        setSimilarMeds([]);
+      }
     } finally {
       setLoadingSearch(false);
     }
   };
 
-  const handleInputChange = async (text) => {
+  const handleInputChange = (text) => {
     setMedicineName(text);
+
+    if (suggestionDebounceRef.current) {
+      clearTimeout(suggestionDebounceRef.current);
+    }
+
     if (!text.trim()) {
       setSuggestions([]);
       return;
     }
-    setLoadingSuggestions(true);
-    try {
-      const res = await fetch(
-        `${API_BASE}/suggestions?q=${encodeURIComponent(text)}`
-      );
-      if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-      const json = await res.json();
-      setSuggestions(Array.isArray(json) ? json.slice(0, 6) : []);
-    } catch (err) {
-      console.error("Error fetching suggestions:", err.message);
-      setSuggestions([]);
-    } finally {
-      setLoadingSuggestions(false);
-    }
+
+    suggestionDebounceRef.current = setTimeout(async () => {
+      if (suggestionAbortRef.current) {
+        suggestionAbortRef.current.abort();
+      }
+
+      const controller = new AbortController();
+      suggestionAbortRef.current = controller;
+
+      setLoadingSuggestions(true);
+
+      try {
+        const res = await fetch(
+          `${API_BASE}/suggestions?q=${encodeURIComponent(text)}`,
+          { signal: controller.signal },
+        );
+
+        if (!res.ok) throw new Error("Failed to fetch suggestions");
+
+        const json = await res.json();
+        setSuggestions(Array.isArray(json) ? json.slice(0, 6) : []);
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          console.error("Suggestion error:", err.message);
+          setSuggestions([]);
+        }
+      } finally {
+        setLoadingSuggestions(false);
+      }
+    }, 400);
   };
 
   const handleSuggestionPress = (item) => {
@@ -170,7 +254,7 @@ export default function Med() {
   };
 
   const renderHeader = () => (
-    <View style={{ paddingBottom: 20 }}>
+    <View style={{ paddingBottom: 0 }}>
       <View
         style={{
           flexDirection: "row",
@@ -253,9 +337,62 @@ export default function Med() {
       </TouchableOpacity>
 
       <ScrollView
-        style={{ maxHeight: "72%", padding: 0, borderRadius: 18 }}
+        style={{ maxHeight: "71%", padding: 0, borderRadius: 18 }}
         contentContainerStyle={{ paddingBottom: 16 }}
       >
+        {history.length > 0 ? (
+          <View>
+            <Text
+              style={{
+                color: colors.label,
+                fontWeight: "700",
+                paddingTop: 10,
+                paddingLeft: 10,
+              }}
+            >
+              Search History :
+            </Text>
+
+            {history.map((item, index) => (
+              <View
+                key={index}
+                style={{
+                  paddingLeft: 10,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "95%",
+                  paddingVertical: 2,
+                }}
+              >
+                {/* Left text */}
+                <Text
+                  style={{ color: colors.placeholder, flex: 1, paddingLeft: 8 }}
+                >
+                  {item}
+                </Text>
+
+                {/* Right clickable angle */}
+                <TouchableOpacity
+                  onPress={() => setMedicineName(item)}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  <Text
+                    style={{
+                      color: colors.text,
+                      fontSize: 18,
+                      paddingLeft: 12,
+                    }}
+                  >
+                    {"\u00A0\u031A"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+        ) : (
+          <Text style={{ color: colors.text }}>No history yet</Text>
+        )}
         {searchResult && (
           <MedicineCard
             data={searchResult}
@@ -477,13 +614,13 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     borderBottomColor: "#ccc",
   },
-  suggestionItem: { fontSize: 16 },
+  suggestionItem: { fontSize: 14 },
   button: {
-    paddingVertical: 14,
+    paddingVertical: 12,
     borderRadius: 14,
     alignItems: "center",
-    marginTop: 16,
-    marginBottom: 12,
+    marginTop: 10,
+    marginBottom: 8,
   },
   buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
   resultBox: {

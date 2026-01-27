@@ -10,9 +10,12 @@ import {
   Platform,
   useColorScheme,
   KeyboardAvoidingView,
+  Share,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Feather } from "@expo/vector-icons";
+import { useFocusEffect } from "expo-router";
 import * as Notifications from "expo-notifications";
 
 const STORAGE_KEY = "@reminders_v1";
@@ -21,6 +24,12 @@ const PRESET_TIMES = {
   lunch: { hour: 13, minute: 0 },
   dinner: { hour: 20, minute: 0 },
 };
+const TIME_OPTIONS = [
+  { key: "breakfast", label: "Breakfast (8:00)" },
+  { key: "lunch", label: "Lunch (13:00)" },
+  { key: "dinner", label: "Dinner (20:00)" },
+  { key: "custom", label: "Custom" },
+];
 
 // Compute notification date
 function computeNotificationDate(baseDate, hour, minute, offsetMinutes = 0) {
@@ -33,40 +42,60 @@ function computeNotificationDate(baseDate, hour, minute, offsetMinutes = 0) {
   return d;
 }
 
-export default function Reminder({ name }) {
+export default function Reminder() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
-  const first_name = name || "John";
-
+  const [first_name, setFirstName] = useState("John");
   const [medicine, setMedicine] = useState("");
   const [timeMode, setTimeMode] = useState("breakfast");
   const [customTime, setCustomTime] = useState(new Date());
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [beforeAfter, setBeforeAfter] = useState("before");
-  const [offset, setOffset] = useState(15);
+  const [offset, setOffset] = useState(0);
   const [endDate, setEndDate] = useState(null);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [reminders, setReminders] = useState([]);
 
-  // ✅ Local notifications setup (disable push auto-registration)
+  useFocusEffect(
+    useCallback(() => {
+      const loadName = async () => {
+        try {
+          const raw = await AsyncStorage.getItem("USER_PROFILE_V1");
+          if (raw) {
+            const profile = JSON.parse(raw);
+            if (profile?.name) setFirstName(profile.name);
+          }
+        } catch (e) {
+          console.error("Failed to load name", e);
+        }
+      };
+
+      loadName();
+    }, []),
+  );
+
   useEffect(() => {
     (async () => {
-      // disable push token auto-registration in Expo Go
-      if (Platform.OS === "android" || Platform.OS === "ios") {
-        try {
-          // Catch the error silently if push setup is attempted
-          // eslint-disable-next-line import/namespace
-          Notifications.getExpoPushTokenAsync = async () => {
-            throw new Error("Push not supported in Expo Go");
-          };
-        } catch {}
+      // 🔴 STEP 1: Clear old broken notifications
+      await Notifications.cancelAllScheduledNotificationsAsync();
+
+      // 🟢 STEP 2: Create Android channel FIRST
+      if (Platform.OS === "android") {
+        await Notifications.setNotificationChannelAsync("reminders", {
+          name: "Medicine Reminders",
+          importance: Notifications.AndroidImportance.HIGH,
+          sound: "default",
+        });
       }
 
+      // 🟢 STEP 3: Ask permission
       const { status } = await Notifications.requestPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert("Permission required", "Enable notifications to get reminders.");
+        Alert.alert("Permission required", "Enable notifications.");
+        return;
       }
 
+      // 🟢 STEP 4: Notification handler
       Notifications.setNotificationHandler({
         handleNotification: async () => ({
           shouldShowAlert: true,
@@ -75,10 +104,47 @@ export default function Reminder({ name }) {
         }),
       });
 
+      // 🟢 STEP 5: Load AFTER everything is ready
       await loadReminders();
-      await scheduleAllReminders();
     })();
-  }, [scheduleAllReminders]);
+  }, []);
+
+  async function scheduleNotification(reminder) {
+    const notifDate = new Date(reminder.date);
+    const end = reminder.endDate ? new Date(reminder.endDate) : null;
+    const ids = [];
+
+    const baseContent = {
+      title: "💊 Reminder",
+      body: `Take ${reminder.medicine} (${reminder.beforeAfter} food)`,
+      sound: "default",
+      channelId: Platform.OS === "android" ? "reminders" : undefined,
+    };
+
+    if (end) {
+      let d = new Date(notifDate);
+      while (d <= end) {
+        const id = await Notifications.scheduleNotificationAsync({
+          content: baseContent,
+          trigger: { date: d },
+        });
+        ids.push(id);
+        d.setDate(d.getDate() + 1);
+      }
+    } else {
+      const id = await Notifications.scheduleNotificationAsync({
+        content: baseContent,
+        trigger: {
+          hour: notifDate.getHours(),
+          minute: notifDate.getMinutes(),
+          repeats: true,
+        },
+      });
+      ids.push(id);
+    }
+
+    return ids;
+  }
 
   async function loadReminders() {
     const raw = await AsyncStorage.getItem(STORAGE_KEY);
@@ -107,73 +173,6 @@ export default function Reminder({ name }) {
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(list));
   }
 
-  async function scheduleNotification(reminder) {
-    const notifDate = new Date(reminder.date);
-    const end = reminder.endDate ? new Date(reminder.endDate) : null;
-    let notificationIds = [];
-
-    if (end) {
-      let d = new Date(notifDate);
-      while (d <= end) {
-        const id = await Notifications.scheduleNotificationAsync({
-          content: {
-            title: "💊 Reminder",
-            body: `Take ${reminder.medicine} (${reminder.beforeAfter} food)`,
-            sound: true,
-          },
-          trigger: d,
-        });
-        notificationIds.push(id);
-        d.setDate(d.getDate() + 1);
-      }
-    } else {
-      const id = await Notifications.scheduleNotificationAsync({
-        content: {
-          title: "💊 Reminder",
-          body: `Take ${reminder.medicine} (${reminder.beforeAfter} food)`,
-          sound: true,
-        },
-        trigger: {
-          hour: notifDate.getHours(),
-          minute: notifDate.getMinutes(),
-          repeats: true,
-        },
-      });
-      notificationIds.push(id);
-    }
-
-    return notificationIds;
-  }
-
-  const scheduleAllReminders = useCallback(async () => {
-    if (!reminders || reminders.length === 0) return;
-    const now = new Date();
-    let updated = [];
-
-    for (let reminder of reminders) {
-      const d = new Date(reminder.date);
-      if (d < now && reminder.repeat) {
-        d.setDate(d.getDate() + 1);
-        reminder.date = d.toISOString();
-        reminder.status = "pending";
-      } else if (d < now && !reminder.repeat) {
-        reminder.status = "pending";
-      }
-
-      if (reminder.notificationIds) {
-        for (let id of reminder.notificationIds) {
-          await Notifications.cancelScheduledNotificationAsync(id);
-        }
-      }
-
-      const notificationIds = await scheduleNotification(reminder);
-      reminder.notificationIds = notificationIds;
-      updated.push(reminder);
-    }
-
-    await saveReminders(updated);
-  }, [reminders]);
-
   async function addReminder() {
     if (!medicine.trim()) {
       Alert.alert("Missing field", "Please enter a medicine name.");
@@ -181,17 +180,23 @@ export default function Reminder({ name }) {
     }
 
     let hour, minute;
+
     if (timeMode === "custom") {
       hour = customTime.getHours();
       minute = customTime.getMinutes();
     } else {
-      const preset = PRESET_TIMES[timeMode];
+      const preset = PRESET_TIMES[timeMode]; // ✅ always defined
       hour = preset.hour;
       minute = preset.minute;
     }
 
     const offsetMinutes = (beforeAfter === "before" ? -1 : 1) * offset;
-    const notifDate = computeNotificationDate(new Date(), hour, minute, offsetMinutes);
+    const notifDate = computeNotificationDate(
+      new Date(),
+      hour,
+      minute,
+      offsetMinutes,
+    );
 
     const id = Date.now().toString();
     const reminder = {
@@ -229,7 +234,38 @@ export default function Reminder({ name }) {
   }
 
   async function markStatus(remId, status) {
-    await saveReminders(reminders.map((r) => (r.id === remId ? { ...r, status } : r)));
+    await saveReminders(
+      reminders.map((r) => (r.id === remId ? { ...r, status } : r)),
+    );
+  }
+
+  async function shareReminders() {
+    try {
+      const raw = await AsyncStorage.getItem(STORAGE_KEY);
+      const list = raw ? JSON.parse(raw) : [];
+
+      if (!list.length) {
+        Alert.alert("No reminders", "You have no reminders to share.");
+        return;
+      }
+
+      const text = list
+        .map((r, i) => {
+          const time = new Date(r.date).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+
+          return `${i + 1}. ${r.medicine} — ${time} • ${r.beforeAfter} food`;
+        })
+        .join("\n");
+
+      await Share.share({
+        message: `My Medicine Reminders:\n\n${text}`,
+      });
+    } catch (e) {
+      Alert.alert("Share failed", e.message);
+    }
   }
 
   const colors = {
@@ -251,8 +287,13 @@ export default function Reminder({ name }) {
     >
       <View style={[styles.container]}>
         <Text style={[styles.header, { color: colors.text }]}>
-          {first_name}&#39;s Reminder
+          Reminder
         </Text>
+
+        {/* SHARE BUTTON */}
+        <Pressable style={[styles.shareBtn]} onPress={shareReminders}>
+          <Feather name="share-2" size={22} color={isDark ? "#fff" : "#000"} />
+        </Pressable>
 
         {/* Form */}
         <View style={[styles.card, { backgroundColor: colors.card }]}>
@@ -276,32 +317,33 @@ export default function Reminder({ name }) {
             Select Time
           </Text>
           <View style={styles.row}>
-            {["breakfast", "lunch", "dinner", "custom"].map((m) => (
+            {TIME_OPTIONS.map(({ key, label }) => (
               <Pressable
-                key={m}
+                key={key}
                 style={[
                   styles.chip,
                   {
                     backgroundColor:
-                      timeMode === m ? colors.chipActive : colors.input,
+                      timeMode === key ? colors.chipActive : colors.input,
                     borderColor: colors.border,
                   },
                 ]}
                 onPress={() => {
-                  setTimeMode(m);
-                  if (m === "custom") setShowTimePicker(true);
+                  setTimeMode(key);
+                  if (key === "custom") setShowTimePicker(true);
                 }}
               >
                 <Text
                   style={{
-                    color: timeMode === m ? "#fff" : colors.chipText,
+                    color: timeMode === key ? "#fff" : colors.chipText,
                   }}
                 >
-                  {m}
+                  {label}
                 </Text>
               </Pressable>
             ))}
           </View>
+
           {timeMode === "custom" && showTimePicker && (
             <DateTimePicker
               value={customTime}
@@ -342,7 +384,9 @@ export default function Reminder({ name }) {
                 </Text>
               </Pressable>
             ))}
-            {[15, 30].map((m) => (
+          </View>
+          <View style={styles.row}>
+            {[0, 15, 30].map((m) => (
               <Pressable
                 key={m}
                 style={[
@@ -401,7 +445,7 @@ export default function Reminder({ name }) {
 
         {/* List */}
         <Text style={[styles.sectionHeader, { color: colors.text }]}>
-          Your Reminders
+          {first_name}&#39;s Reminders
         </Text>
 
         <FlatList
@@ -485,6 +529,16 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingBottom: 12,
   },
+  shareBtn: {
+    marginBottom: 0,
+    padding: 0,
+    borderRadius: 50,
+    alignItems: "center",
+    float: "right",
+    position: "absolute",
+    top: 40,
+    right: 30,
+  },
   card: {
     padding: 16,
     borderRadius: 20,
@@ -504,11 +558,11 @@ const styles = StyleSheet.create({
   label: { fontWeight: "600", marginTop: 10, marginBottom: 4 },
   row: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
   chip: {
-    paddingVertical: 8,
-    paddingHorizontal: 14,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
     borderRadius: 20,
     borderWidth: 1,
-    margin: 4,
+    margin: 2,
   },
   timeBtn: {
     marginTop: 8,
@@ -518,7 +572,7 @@ const styles = StyleSheet.create({
   },
   saveBtn: {
     marginTop: 14,
-    padding: 12,
+    padding: 10,
     borderRadius: 14,
     alignItems: "center",
   },
@@ -526,7 +580,7 @@ const styles = StyleSheet.create({
   reminderRow: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 12,
+    padding: 10,
     borderRadius: 16,
     marginVertical: 6,
     borderWidth: 1,

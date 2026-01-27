@@ -4,7 +4,8 @@
 const ENV = {
   dev: {
     // use LAN_IP from .env or fallback
-    API_BASE: "https://medi-query.onrender.com", // 👈 replace with your LAN IPv4 from ipconfig
+    API_BASE: "http://192.168.29.252:5000",
+    // API_BASE: "http://medi-query.onrender.com", // 👈 replace with your LAN IPv4 from ipconfig
   },
   prod: {
     API_BASE: "https://medi-query.onrender.com", // fallback in prod
