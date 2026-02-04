@@ -43,7 +43,7 @@ export default function Med() {
   const [loadingSearch, setLoadingSearch] = useState(false);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [selectedMedicine, setSelectedMedicine] = useState(null);
-  const [history, setHistory] = useState([""]);
+  const [history, setHistory] = useState([]);
   const spinAnim = useRef(new Animated.Value(0)).current;
   const [iconActive, setIconActive] = useState(false);
 
@@ -52,11 +52,8 @@ export default function Med() {
   const suggestionAbortRef = useRef(null);
 
   const colors = {
-    background: "transparent",
-    card:
-      colorScheme === "dark"
-        ? "rgba(79, 90, 104, 1)"
-        : "rgba(248, 250, 252, 1)",
+    background: colorScheme === "dark" ? "#000000" : "#F0FDF4",
+    card: colorScheme === "dark" ? "rgb(51, 54, 58)" : "rgba(248, 250, 252, 1)",
     text: colorScheme === "dark" ? "#F8FAFC" : "#1E293B",
     label: colorScheme === "dark" ? "#CBD5E1" : "#334155",
     price: "#16A34A",
@@ -64,6 +61,7 @@ export default function Med() {
     placeholder: "#94A3B8",
     overlay: "rgba(0,0,0,0.7)",
   };
+
   useEffect(() => {
     return () => {
       if (searchAbortRef.current) searchAbortRef.current.abort();
@@ -254,7 +252,7 @@ export default function Med() {
   };
 
   const renderHeader = () => (
-    <View style={{ paddingBottom: 0 }}>
+    <View style={{ paddingBottom: 0, color: colors.text }}>
       <View
         style={{
           flexDirection: "row",
@@ -337,7 +335,7 @@ export default function Med() {
       </TouchableOpacity>
 
       <ScrollView
-        style={{ maxHeight: "71%", padding: 0, borderRadius: 18 }}
+        style={{ maxHeight: "73%", padding: 0, borderRadius: 18 }}
         contentContainerStyle={{ paddingBottom: 16 }}
       >
         {history.length > 0 ? (
@@ -365,14 +363,11 @@ export default function Med() {
                   paddingVertical: 2,
                 }}
               >
-                {/* Left text */}
                 <Text
                   style={{ color: colors.placeholder, flex: 1, paddingLeft: 8 }}
                 >
                   {item}
                 </Text>
-
-                {/* Right clickable angle */}
                 <TouchableOpacity
                   onPress={() => setMedicineName(item)}
                   hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
@@ -391,7 +386,19 @@ export default function Med() {
             ))}
           </View>
         ) : (
-          <Text style={{ color: colors.text }}>No history yet</Text>
+          <Text
+            style={{
+              color: colors.placeholder,
+              paddingLeft: 10,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "95%",
+              paddingVertical: 2,
+            }}
+          >
+            No history yet
+          </Text>
         )}
         {searchResult && (
           <MedicineCard
@@ -591,7 +598,12 @@ function Detail({ label, value, colors }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, padding: 10 },
+  container: {
+    flexGrow: 1,
+    padding: 8,
+    backgroundColor: "#202020b0",
+    borderRadius: 18,
+  },
   title: { fontSize: 22, fontWeight: "700", marginBottom: 12 },
   label: { fontSize: 16, fontWeight: "500", marginBottom: 8 },
   input: {

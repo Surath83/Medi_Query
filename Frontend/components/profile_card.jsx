@@ -53,8 +53,8 @@ export default function ProfileCard({name, age, height, weight, gender}) {
 
       <Text style={[styles.text, { color: isDark ? "#CBD5E1" : "#334155" }]}>
         {visible
-          ? `Age: ${age}   Ht: ${height} cm   Wt: ${weight} kg`
-          : "Age: ...   Ht: .... cm   Wt: .... kg"}
+          ? `Age: ${age} yr     Ht: ${height} cm      Wt: ${weight} kg`
+          : "Age: .. yr       Ht: .... cm         Wt: .. kg"}
       </Text>
 
       <Text style={[styles.text, { color: isDark ? "#CBD5E1" : "#334155" }]}>

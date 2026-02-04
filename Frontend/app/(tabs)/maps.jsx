@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   markerText: { color: "#fff", fontWeight: "bold" },
-  darkBg: { backgroundColor: "#121212" },
+  darkBg: { backgroundColor: "#000000" },
   lightBg: { backgroundColor: "#F0FDF4" },
   headerLight: { color: "#1F2937" },
   headerDark: { color: "#F3F4F6" },

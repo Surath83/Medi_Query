@@ -126,7 +126,10 @@ export default function Reminder() {
       while (d <= end) {
         const id = await Notifications.scheduleNotificationAsync({
           content: baseContent,
-          trigger: { date: d },
+          trigger: {
+            type: Notifications.SchedulableTriggerInputTypes.DATE,
+            date: new Date(d),
+          },
         });
         ids.push(id);
         d.setDate(d.getDate() + 1);
@@ -135,9 +138,9 @@ export default function Reminder() {
       const id = await Notifications.scheduleNotificationAsync({
         content: baseContent,
         trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.DAILY,
           hour: notifDate.getHours(),
           minute: notifDate.getMinutes(),
-          repeats: true,
         },
       });
       ids.push(id);
@@ -269,7 +272,7 @@ export default function Reminder() {
   }
 
   const colors = {
-    background: isDark ? "#121212" : "#F0FDF4",
+    background: isDark ? "#000000" : "#F0FDF4",
     card: isDark ? "#1E1E1E" : "#ECFEFF",
     input: isDark ? "#2A2A2A" : "#fff",
     text: isDark ? "#E0E0E0" : "#000",
@@ -286,9 +289,7 @@ export default function Reminder() {
       keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
     >
       <View style={[styles.container]}>
-        <Text style={[styles.header, { color: colors.text }]}>
-          Reminder
-        </Text>
+        <Text style={[styles.header, { color: colors.text }]}>Reminder</Text>
 
         {/* SHARE BUTTON */}
         <Pressable style={[styles.shareBtn]} onPress={shareReminders}>

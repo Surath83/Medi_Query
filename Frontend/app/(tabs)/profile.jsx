@@ -127,7 +127,7 @@ export default function Profile() {
                   onChangeText={(t) => handleChange("name", t)}
                 />
 
-                <Text style={dynamicStyles.label}>Age</Text>
+                <Text style={dynamicStyles.label}>Age (yr)</Text>
                 <TextInput
                   style={dynamicStyles.input}
                   value={String(profileData.age)}
@@ -205,7 +205,7 @@ export default function Profile() {
 
 const styles = (isDark) => {
   const colors = {
-    background: isDark ? "#121212" : "#F0FDF4",
+    background: isDark ? "#000000" : "#F0FDF4",
     text: isDark ? "#E5E7EB" : "#1F2937",
     secondaryText: isDark ? "#A1A1AA" : "#4B5563",
     inputBg: isDark ? "#2A2A2A" : "#F1F5F9",

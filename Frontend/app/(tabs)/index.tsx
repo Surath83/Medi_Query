@@ -23,7 +23,7 @@ export default function HomeScreen() {
       <View
         style={[
           styles.container,
-          { backgroundColor: isDark ? "#121212" : "#F0FDF4" },
+          { backgroundColor: isDark ? "#000000" : "#F0FDF4" },
         ]}
       >
           <Text
