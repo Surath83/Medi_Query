@@ -175,8 +175,8 @@ node server.js
 
 <hr>
 <h3>📦 Build APK (Android)</h3>
-<p>npx expo prebuild</p>
 <pre><code>
+npx expo prebuild
 cd android
 gradlew assembleRelease
 </code></pre>
