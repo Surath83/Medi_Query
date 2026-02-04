@@ -174,6 +174,26 @@ node server.js
 </code></pre>
 
 <hr>
+<h3>📦 Build APK (Android)</h3>
+<pre><code>
+npx expo prebuild
+cd android
+gradlew assembleRelease
+</code></pre>
+
+<p>APK will be generated inside:</p>
+
+<pre><code>android/app/build/outputs/apk/release/</code></pre>
+
+<h3>🍎 iOS Build (IPA)</h3>
+<p>npx expo prebuild</p>
+<pre><code>
+cd ios
+pod install
+open MediQuery.xcworkspace
+</code></pre>
+
+<hr>
 
 <h2>Backend URL (endpoint)</h2>
 <p>
