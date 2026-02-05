@@ -14,6 +14,14 @@
 
 <hr>
 
+<h2>Logo</h2>
+<img  src="https://raw.githubusercontent.com/Surath83/Medi_Query/main/snaps/MediQuery.JPG"
+      width="110"
+      height="110"
+      alt="App Logo"
+        />
+<hr>
+
 <h2>🚀 What MediQuery Offers</h2>
 
 <h3>🌗 Smart & Accessible UI</h3>
