@@ -127,18 +127,3 @@ For answers to common questions about this code of conduct, see the FAQ at
 https://www.contributor-covenant.org/faq. Translations are available at
 https://www.contributor-covenant.org/translations.
 
-## 🙌 Acknowledgements
-
-We would like to sincerely thank our fellow contributor:
-
-- **Subhasish** — [@Subhasish18](https://github.com/Subhasish18)
-
-for their valuable support and guidance during the development of MediQuery, 
-especially for their help with the **authentication architecture and design**.
-
-Although the authentication module is not part of **v1.0.0**, their contributions
-played an important role in shaping upcoming features and future releases.
-
-We truly appreciate the time, effort, and collaboration that helped strengthen
-this project.
-
