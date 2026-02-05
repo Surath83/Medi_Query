@@ -44,6 +44,27 @@
 </ul>
 
 <hr>
+<h2>🖼️ App Screenshots (Binaries)</h2>
+
+<h3>🔹 Main Pages / Core Features</h3>
+
+<div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+  <img src="https://github.com/Surath83/Medi_Query/snaps/1.0.jpeg" width="220" alt="Main Page 1" />
+  <img src="https://github.com/Surath83/Medi_Query/snaps/2.0.jpeg" width="220" alt="Main Page 2" />
+  <img src="https://github.com/Surath83/Medi_Query/snaps/3.0.jpeg" width="220" alt="Main Page 3" />
+  <img src="https://github.com/Surath83/Medi_Query/snaps/4.0.jpeg" width="220" alt="Main Page 4" />
+</div>
+
+<hr />
+
+<h3>🔹 Sub-Modules / Additional Pages</h3>
+
+<div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+  <img src="https://github.com/Surath83/Medi_Query/snaps/1.1.jpeg" width="220" alt="Sub Module 1.1" />
+  <img src="https://github.com/Surath83/Medi_Query/snaps/4.1.jpeg" width="220" alt="Sub Module 4.1" />
+</div>
+
+<hr />
 
 <h2>📱 Platforms</h2>
 <ul>
