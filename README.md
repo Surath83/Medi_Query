@@ -14,57 +14,134 @@
 
 <hr>
 
-<h2>🚀 Features</h2>
+<h2>🚀 What MediQuery Offers</h2>
 
-<h3>🏠 Home</h3>
+<h3>🌗 Smart & Accessible UI</h3>
 <ul>
-  <li>Search and discover medicines easily.</li>
-  <li>Get detailed information: composition, company name, substitutes, price, and popularity.</li>
-  <li>When a medicine is searched, similar medicines and their prices also appear — helping users find affordable substitutes.</li>
+  <li><strong>Light / Dark Mode</strong> support for comfortable viewing in all environments</li>
+  <li>Clean, minimal, and mobile-first design</li>
 </ul>
 
-<h3>🗺️ Maps</h3>
+<h3>🔬 Medical Intelligence</h3>
 <ul>
-  <li>View nearby medical stores using real-time location.</li>
-  <li>Integrated with location services to quickly find and navigate to pharmacies.</li>
+  <li>
+    <strong>Similar Medical Composition Finder</strong><br />
+    Find alternative medicines with the same or similar composition
+  </li>
+  <li>Detailed medicine information for safer choices</li>
 </ul>
 
-<h3>⏰ Reminder</h3>
+<h3>🏥 Nearby Healthcare Access</h3>
 <ul>
-  <li>Schedule and manage medicine intake reminders.</li>
-  <li>Set daily or weekly reminders with push notifications.</li>
-  <li>Never miss a dose with customizable alerts powered by Expo Notifications and Firebase Cloud Messaging.</li>
+  <li>
+    <strong>Nearest Pharmacy Locator</strong><br />
+    Quickly discover nearby medical stores when you need them the most
+  </li>
 </ul>
 
-<h3>👤 Profile</h3>
+<h3>⏰ Health Management Tools</h3>
 <ul>
-  <li>Manage personal details and preferences.</li>
-  <li>Track BMR, BMI, and health metrics to indicate proper doses.</li>
-  <li>View past reminders and medicine history.</li>
+  <li>
+    <strong>Medicine Reminders</strong><br />
+    Never miss a dose with timely reminder notifications
+  </li>
+  <li>
+    <strong>One-Click Medicine List Sharing</strong><br />
+    Instantly share your medicine list with family members or caregivers
+  </li>
 </ul>
 
-<hr>
-<h2>🖼️ App Screenshots (Binaries)</h2>
+<h3>📊 Health Metrics Tracking</h3>
+<ul>
+  <li><strong>BMI &amp; BMR Calculator</strong></li>
+  <li>Track and monitor:</li>
+  <ul>
+    <li>Weight</li>
+    <li>Height</li>
+    <li>Body health indicators over time</li>
+  </ul>
+</ul>
 
-<h3>🔹 Main Pages / Core Features</h3>
+<h3>🚀 Productivity &amp; Convenience</h3>
+<ul>
+  <li>Fast search and intuitive navigation</li>
+  <li>Secure local data handling</li>
+  <li>Designed for everyday medical needs</li>
+</ul>
 
-<div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
-  <img src="https://github.com/Surath83/Medi_Query/snaps/1.0.jpeg" width="220" alt="Main Page 1" />
-  <img src="https://github.com/Surath83/Medi_Query/snaps/2.0.jpeg" width="220" alt="Main Page 2" />
-  <img src="https://github.com/Surath83/Medi_Query/snaps/3.0.jpeg" width="220" alt="Main Page 3" />
-  <img src="https://github.com/Surath83/Medi_Query/snaps/4.0.jpeg" width="220" alt="Main Page 4" />
+
+<h2 align="center">🖼️ App Screenshots</h2>
+
+<h3 align="center">🔹 Main Pages / Core Features</h3>
+
+<div align="center">
+  <table>
+    <tr>
+      <td>
+        <img
+          src="https://raw.githubusercontent.com/Surath83/Medi_Query/main/snaps/1.0.jpeg"
+          width="240"
+          height="480"
+          alt="Home Screen - Medical Enquiry"
+        />
+      </td>
+      <td>
+        <img
+          src="https://raw.githubusercontent.com/Surath83/Medi_Query/main/snaps/2.0.jpeg"
+          width="240"
+          height="480"
+          alt="Search History Screen"
+        />
+      </td>
+      <td>
+        <img
+          src="https://raw.githubusercontent.com/Surath83/Medi_Query/main/snaps/3.0.jpeg"
+          width="240"
+          height="480"
+          alt="Medicine Detail Screen"
+        />
+      </td>
+      <td>
+        <img
+          src="https://raw.githubusercontent.com/Surath83/Medi_Query/main/snaps/4.0.jpeg"
+          width="240"
+          height="480"
+          alt="Suggested Medicines Screen"
+        />
+      </td>
+    </tr>
+  </table>
 </div>
 
 <hr />
 
-<h3>🔹 Sub-Modules / Additional Pages</h3>
+<h3 align="center">🔹 Sub-Modules / Additional Pages</h3>
 
-<div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
-  <img src="https://github.com/Surath83/Medi_Query/snaps/1.1.jpeg" width="220" alt="Sub Module 1.1" />
-  <img src="https://github.com/Surath83/Medi_Query/snaps/4.1.jpeg" width="220" alt="Sub Module 4.1" />
+<div align="center">
+  <table>
+    <tr>
+      <td>
+        <img
+          src="https://raw.githubusercontent.com/Surath83/Medi_Query/main/snaps/1.1.jpeg"
+          width="240"
+          height="480"
+          alt="Sub Module Screen 1"
+        />
+      </td>
+      <td>
+        <img
+          src="https://raw.githubusercontent.com/Surath83/Medi_Query/main/snaps/4.1.jpeg"
+          width="240"
+          height="480"
+          alt="Sub Module Screen 2"
+        />
+      </td>
+    </tr>
+  </table>
 </div>
 
 <hr />
+
 
 <h2>📱 Platforms</h2>
 <ul>
