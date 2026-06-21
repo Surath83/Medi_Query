@@ -1,86 +1,93 @@
-const express = require("express");
-const dotenv = require("dotenv");
-const { MongoClient } = require("mongodb");
-const cors = require("cors");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const express = require('express')
+const dotenv = require('dotenv')
+const { MongoClient } = require('mongodb')
+const cors = require('cors')
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+const { createClient } = require('redis')
 
 const fetch = (...args) =>
-  import("node-fetch").then(({ default: fetch }) => fetch(...args));
+  import('node-fetch').then(({ default: fetch }) => fetch(...args))
 
-dotenv.config();
+dotenv.config()
 
-const app = express();
+const app = express()
 
-app.use(cors());
-app.use(express.json());
+app.use(cors())
+app.use(express.json())
 
 // =============================
 // ENVIRONMENT CHECKS
 // =============================
 
 if (!process.env.MONGO_URI) {
-  throw new Error("MONGO_URI missing");
+  throw new Error('MONGO_URI missing')
 }
 
 if (!process.env.MONGO_LOGIN_URI) {
-  throw new Error("MONGO_LOGIN_URI missing");
+  throw new Error('MONGO_LOGIN_URI missing')
 }
 
 if (!process.env.JWT_SECRET) {
-  throw new Error("JWT_SECRET missing");
+  throw new Error('JWT_SECRET missing')
 }
 
 // =============================
 // MONGO CLIENTS
 // =============================
 
-const medicineClient = new MongoClient(process.env.MONGO_URI);
+const medicineClient = new MongoClient(process.env.MONGO_URI)
 
-const authClient = new MongoClient(
-  process.env.MONGO_LOGIN_URI
-);
+const authClient = new MongoClient(process.env.MONGO_LOGIN_URI)
 
-let collection;
-let usersCollection;
+// Redis Client
+const redisClient = createClient({
+  socket: {
+    host: '127.0.0.1',
+    port: 6379
+  }
+})
+
+redisClient.on('error', err => {
+  console.error('Redis Error:', err)
+})
+
+let collection
+let usersCollection
 
 // =============================
 // CONNECT DATABASES
 // =============================
 
-async function connectDB() {
+async function connectDB () {
   // Medicines DB
-  await medicineClient.connect();
+  await medicineClient.connect()
 
-  const medicineDB = medicineClient.db("ENQUIRY");
+  const medicineDB = medicineClient.db('ENQUIRY')
 
-  collection =
-    medicineDB.collection("A_Z_medidb");
+  collection = medicineDB.collection('A_Z_medidb')
 
   // Auth DB
-  await authClient.connect();
+  await authClient.connect()
 
-  const authDB =
-    authClient.db("MediQueryAuth");
+  const authDB = authClient.db('MediQueryAuth')
 
-  usersCollection =
-    authDB.collection("users");
+  usersCollection = authDB.collection('users')
 
-  console.log(
-    "Medicine Collection:",
-    collection.collectionName
-  );
+  // Redis
+  await redisClient.connect()
 
-  console.log(
-    "Users Collection:",
-    usersCollection.collectionName
-  );
+  await redisClient.set('redis_test', 'connected')
+  const test = await redisClient.get('redis_test')
 
-  console.log(
-    "✅ Connected to MongoDB Atlas"
-  );
+  console.log('✅ Redis Connected:', test)
+
+  console.log('Medicine Collection:', collection.collectionName)
+
+  console.log('Users Collection:', usersCollection.collectionName)
+
+  console.log('✅ Connected to MongoDB Atlas')
 }
-
 
 //register
 app.post('/auth/register', async (req, res) => {
@@ -136,7 +143,6 @@ app.post('/auth/register', async (req, res) => {
   }
 })
 
-
 //login
 app.post('/auth/login', async (req, res) => {
   try {
@@ -152,10 +158,7 @@ app.post('/auth/login', async (req, res) => {
       })
     }
 
-    const validPassword = await bcrypt.compare(
-      password,
-      user.password
-    )
+    const validPassword = await bcrypt.compare(password, user.password)
 
     if (!validPassword) {
       return res.status(401).json({
@@ -189,33 +192,27 @@ app.post('/auth/login', async (req, res) => {
   }
 })
 
-
-function verifyToken(req, res, next) {
-  const authHeader =
-    req.headers.authorization;
+function verifyToken (req, res, next) {
+  const authHeader = req.headers.authorization
 
   if (!authHeader) {
     return res.status(401).json({
-      message: "Access denied",
-    });
+      message: 'Access denied'
+    })
   }
 
-  const token =
-    authHeader.split(" ")[1];
+  const token = authHeader.split(' ')[1]
 
   try {
-    const verified = jwt.verify(
-      token,
-      process.env.JWT_SECRET
-    );
+    const verified = jwt.verify(token, process.env.JWT_SECRET)
 
-    req.user = verified;
+    req.user = verified
 
-    next();
+    next()
   } catch (err) {
     return res.status(401).json({
-      message: "Invalid token",
-    });
+      message: 'Invalid token'
+    })
   }
 }
 
@@ -241,6 +238,17 @@ app.post('/get_medical_shops', async (req, res) => {
   out center qt ${MAX_RESULTS};`
 
   try {
+    const cacheKey = `shops:${lat}:${lon}`
+
+    const cached = await redisClient.get(cacheKey)
+
+    if (cached) {
+      console.log(`⚡ CACHE HIT [MEDICAL_SHOPS] -> ${cacheKey}`)
+      return res.json(JSON.parse(cached))
+    }
+
+    console.log(`❌ CACHE MISS [MEDICAL_SHOPS] -> ${cacheKey}`)
+    console.log(`🌍 Overpass API Request Executed`)
     const response = await fetch('https://overpass-api.de/api/interpreter', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -262,6 +270,8 @@ app.post('/get_medical_shops', async (req, res) => {
         'Address not available'
     }))
 
+    await redisClient.setEx(cacheKey, 600, JSON.stringify(shops))
+    console.log(`💾 CACHE STORED -> ${cacheKey}`)
     res.json(shops)
   } catch (err) {
     console.error('❌ Error fetching nearby shops:', err)
@@ -275,6 +285,18 @@ app.get('/suggestions', async (req, res) => {
   if (!query || query.trim() === '') return res.json([])
 
   try {
+    const cacheKey = `suggestions:${query.toLowerCase()}`
+
+    const cached = await redisClient.get(cacheKey)
+
+    if (cached) {
+      console.log(`⚡ CACHE HIT [SIMILAR] -> ${cacheKey}`)
+      return res.json(JSON.parse(cached))
+    }
+
+    console.log(`❌ CACHE MISS [SIMILAR] -> ${cacheKey}`)
+    console.log(`📦 MongoDB Query Executed`)
+
     const regex = new RegExp('^' + query, 'i')
     const results = await collection
       .find({ name: regex })
@@ -282,6 +304,8 @@ app.get('/suggestions', async (req, res) => {
       .project({ name: 1, _id: 0 })
       .toArray()
 
+    await redisClient.setEx(cacheKey, 1800, JSON.stringify(results))
+    console.log(`💾 CACHE STORED -> ${cacheKey}`)
     res.json(results)
   } catch (err) {
     console.error('❌ Error fetching suggestions:', err)
@@ -296,6 +320,19 @@ app.get('/medicine', async (req, res) => {
     return res.status(400).json({ error: 'Medicine name required' })
 
   try {
+    const cacheKey = `medicine:${name.toLowerCase()}`
+
+    // Check Redis first
+    const cachedMedicine = await redisClient.get(cacheKey)
+
+    if (cachedMedicine) {
+      console.log(`⚡ CACHE HIT [MEDICINE] -> ${cacheKey}`)
+      return res.json(JSON.parse(cachedMedicine))
+    }
+
+    console.log(`❌ CACHE MISS [MEDICINE] -> ${cacheKey}`)
+    console.log(`📦 MongoDB Query Executed`)
+
     const result = await collection.findOne(
       { name: new RegExp('^' + name + '$', 'i') },
       {
@@ -330,6 +367,9 @@ app.get('/medicine', async (req, res) => {
       result.price = result['price(₹)']
     }
 
+    // Store in Redis for 1 hour
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(result))
+    console.log(`💾 CACHE STORED -> ${cacheKey}`)
     res.json(result)
   } catch (err) {
     console.error('❌ Error fetching medicine:', err)
@@ -340,11 +380,31 @@ app.get('/medicine', async (req, res) => {
 // 🔗 Similar medicines endpoint
 app.get('/similar', async (req, res) => {
   const { comp1, comp2 } = req.query
-  if (!comp1) return res.status(400).json({ error: 'Composition required' })
+
+  if (!comp1) {
+    return res.status(400).json({
+      error: 'Composition required'
+    })
+  }
 
   try {
-    const query = { short_composition1: comp1 }
-    if (comp2 && comp2.trim() !== '') query.short_composition2 = comp2
+    const cacheKey = `similar:${comp1}:${comp2 || ''}`
+
+    const cached = await redisClient.get(cacheKey)
+
+    if (cached) {
+      console.log(`⚡ Redis HIT: ${cacheKey}`)
+
+      return res.json(JSON.parse(cached))
+    }
+
+    const query = {
+      short_composition1: comp1
+    }
+
+    if (comp2 && comp2.trim() !== '') {
+      query.short_composition2 = comp2
+    }
 
     const similarMeds = await collection
       .find(query)
@@ -362,10 +422,16 @@ app.get('/similar', async (req, res) => {
       price: item['price(₹)']
     }))
 
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(formatted))
+
+    console.log(`💾 CACHE STORED -> ${cacheKey}`)
     res.json(formatted)
   } catch (err) {
-    console.error('❌ Error fetching similar medicines:', err)
-    res.status(500).json({ error: 'Internal Server Error' })
+    console.error(err)
+
+    res.status(500).json({
+      error: 'Internal Server Error'
+    })
   }
 })
 
@@ -378,13 +444,8 @@ connectDB().then(() => {
   )
 })
 
-
-
-
-
-
 //jwt
-function verifyToken(req, res, next) {
+function verifyToken (req, res, next) {
   const authHeader = req.headers.authorization
 
   if (!authHeader) {
@@ -396,10 +457,7 @@ function verifyToken(req, res, next) {
   const token = authHeader.split(' ')[1]
 
   try {
-    const verified = jwt.verify(
-      token,
-      process.env.JWT_SECRET
-    )
+    const verified = jwt.verify(token, process.env.JWT_SECRET)
 
     req.user = verified
 
@@ -411,3 +469,18 @@ function verifyToken(req, res, next) {
   }
 }
 
+app.get('/redis-status', async (req, res) => {
+  try {
+    await redisClient.set('test', 'working')
+
+    const value = await redisClient.get('test')
+
+    res.json({
+      redis: value
+    })
+  } catch (err) {
+    res.status(500).json({
+      error: err.message
+    })
+  }
+})
