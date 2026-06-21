@@ -601,6 +601,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 8,
+    backgroundColor: "#202020b0",
     borderRadius: 18,
   },
   title: { fontSize: 22, fontWeight: "700", marginBottom: 12 },

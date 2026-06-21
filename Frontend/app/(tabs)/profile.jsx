@@ -17,14 +17,12 @@ import {
 import { BlurView } from "expo-blur";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Profile_Card from "@/components/profile_card";
-import * as SecureStore from "expo-secure-store";
-import { router } from "expo-router";
 
 const PROFILE_KEY = "USER_PROFILE_V1";
 const genderOptions = ["male", "female", "other"];
 
 const DEFAULT_PROFILE = {
-  name: "",
+  name: "john",
   age: 25,
   height: 160,
   weight: 70,
@@ -38,27 +36,6 @@ export default function Profile() {
   const [profileData, setProfileData] = useState(DEFAULT_PROFILE);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const isFirstLoad = useRef(true);
-
-  useEffect(() => {
-    loadUser();
-  }, []);
-
-  const loadUser = async () => {
-    try {
-      const userData = await AsyncStorage.getItem("loggedUser");
-
-      if (userData) {
-        const user = JSON.parse(userData);
-
-        setProfileData((prev) => ({
-          ...prev,
-          name: user.username,
-        }));
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -99,18 +76,6 @@ export default function Profile() {
     Alert.alert("Success", "Profile saved successfully!");
   };
 
-  const handleLogout = async () => {
-    try {
-      await SecureStore.deleteItemAsync("token");
-
-      await AsyncStorage.removeItem("loggedUser");
-
-      router.replace("/login");
-    } catch (error) {
-      Alert.alert("Error", "Failed to logout");
-    }
-  };
-
   return (
     <View style={[dynamicStyles.container]}>
       <ScrollView
@@ -129,19 +94,6 @@ export default function Profile() {
           onPress={() => setEditModalVisible(true)}
         >
           <Text style={dynamicStyles.buttonText}>Edit Profile</Text>
-        </Pressable>
-        <Pressable
-          style={[
-            dynamicStyles.button,
-            {
-              backgroundColor: "#EF4444",
-              alignSelf: "center",
-              minWidth: 120,
-            },
-          ]}
-          onPress={handleLogout}
-        >
-          <Text style={dynamicStyles.buttonText}>Logout</Text>
         </Pressable>
       </ScrollView>
 
@@ -266,8 +218,8 @@ const styles = (isDark) => {
   };
 
   return StyleSheet.create({
-    container: { paddingTop: 4, paddingBottom: 10 },
-
+    container: { paddingTop: 4, paddingBottom: 10},
+    
     header: {
       fontSize: 20,
       fontWeight: "700",
