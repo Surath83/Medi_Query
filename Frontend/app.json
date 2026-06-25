@@ -37,7 +37,6 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-dev-client",
       "expo-router",
       [
         "expo-splash-screen",
@@ -74,10 +73,10 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "e863d94d-75db-4dc6-bebc-7c0fcf6e614a"
+        "projectId": "88b53eed-1e06-4457-9df6-b43857b72381"
       }
     },
     "jsEngine": "hermes",
-    "owner": "sur933"
+    "owner": "surath83"
   }
 }
