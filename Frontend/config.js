@@ -8,7 +8,7 @@ const ENV = {
     // API_BASE: "http://medi-query.onrender.com", // 👈 replace with your LAN IPv4 from ipconfig
   },
   prod: {
-    API_BASE: "https://medi-query.onrender.com:5000", // fallback in prod
+    API_BASE: "https://medi-query-2.onrender.com:5000", // fallback in prod
   },
 };
 
