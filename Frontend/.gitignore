@@ -3,6 +3,9 @@
 .cursor/
 node_modules/
 
+ios/
+android/
+
 expo-env.d.ts
 
 npm-debug.log
