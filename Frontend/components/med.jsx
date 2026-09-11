@@ -831,78 +831,6 @@ function Detail({ label, value, colors }) {
   );
 }
 
-<<<<<<< Updated upstream
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 8,
-    backgroundColor: "#202020b0",
-    borderRadius: 18,
-  },
-  title: { fontSize: 22, fontWeight: "700", marginBottom: 12 },
-  label: { fontSize: 16, fontWeight: "500", marginBottom: 8 },
-  input: {
-    borderWidth: 1,
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    fontSize: 16,
-  },
-  suggestionBox: {
-    borderWidth: 1,
-    borderRadius: 14,
-    marginTop: 4,
-    maxHeight: 260,
-    overflow: "hidden",
-  },
-  suggestionItemWrapper: {
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderBottomWidth: 0.5,
-    borderBottomColor: "#ccc",
-  },
-  suggestionItem: { fontSize: 14 },
-  button: {
-    paddingVertical: 12,
-    borderRadius: 14,
-    alignItems: "center",
-    marginTop: 10,
-    marginBottom: 8,
-  },
-  buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
-  resultBox: {
-    borderRadius: 14,
-    padding: 16,
-    marginTop: 12,
-    borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.1)",
-  },
-  resultHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 6,
-  },
-  resultTitle: {
-    flex: 1,
-    flexShrink: 1,
-    fontSize: 18,
-    fontWeight: "700",
-    marginRight: 10,
-  },
-  price: { minWidth: 70, textAlign: "right", fontSize: 16, fontWeight: "600" },
-  modalBackground: { flex: 1, justifyContent: "center", alignItems: "center" },
-  modalCard: { padding: 20, borderRadius: 16, width: "90%", maxHeight: "85%" },
-  modalTitle: { fontSize: 18, fontWeight: "700", marginBottom: 12 },
-  closeButton: {
-    marginTop: 16,
-    paddingVertical: 12,
-    borderRadius: 14,
-    alignItems: "center",
-  },
-  closeText: { color: "#fff", fontWeight: "600" },
-});
-=======
 // ======================================================
 // MAIN STYLES
 // ======================================================
@@ -1192,4 +1120,3 @@ const medicineDetailStyles = (colors) =>
       color: colors.text,
     },
   });
->>>>>>> Stashed changes

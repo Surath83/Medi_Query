@@ -1,8 +1,3 @@
-<<<<<<< Updated upstream
-import { Tabs } from "expo-router";
-import React from "react";
-import { Platform } from "react-native";
-=======
 import { Tabs, router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -12,7 +7,6 @@ import {
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
 
->>>>>>> Stashed changes
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useTheme } from "@/constants/theme";
@@ -22,12 +16,6 @@ export default function TabLayout() {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
-<<<<<<< Updated upstream
-  return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-=======
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
 
@@ -93,7 +81,6 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
->>>>>>> Stashed changes
         headerShown: false,
 
         tabBarActiveTintColor: colors.primary,
@@ -108,44 +95,7 @@ export default function TabLayout() {
         tabBarButton: HapticTab,
       }}
     >
-<<<<<<< Updated upstream
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="house.fill" color={color} />
-          ),
-        }}
-      />
-      {/* Only render Maps tab on iOS/Android */}
-      {Platform.OS !== "web" && (
-      <Tabs.Screen
-        name="maps"
-        options={{
-          title: "Maps",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="location.fill" color={color} />
-          ),
-        }}
-      />
-      )}
-      <Tabs.Screen
-        name="reminder"
-        options={{
-          title: "Reminder",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="bell.fill" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: "Profile",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="person.crop.circle.fill" color={color} />
-=======
+
       {/* HOME */}
       <Tabs.Screen
         name="index"
@@ -204,7 +154,6 @@ export default function TabLayout() {
               name="person.crop.circle.fill"
               color={color}
             />
->>>>>>> Stashed changes
           ),
         }}
       />

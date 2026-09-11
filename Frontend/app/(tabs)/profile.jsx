@@ -20,13 +20,10 @@ import {
 
 import { BlurView } from "expo-blur";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-<<<<<<< Updated upstream
-import Profile_Card from "@/components/profile_card";
-=======
+
 import * as SecureStore from "expo-secure-store";
 import { router, useFocusEffect } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
->>>>>>> Stashed changes
 
 import Profile_Card from "@/components/profile_card";
 import { useTheme } from "@/constants/theme";
@@ -65,17 +62,7 @@ export default function Profile() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
-<<<<<<< Updated upstream
-  useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const saved = await AsyncStorage.getItem(PROFILE_KEY);
-        if (saved) setProfileData(JSON.parse(saved));
-      } catch (err) {
-        console.error("Error loading user profile:", err);
-      }
-    };
-=======
+
   const dynamicStyles = styles(
     colors,
     insets
@@ -92,7 +79,6 @@ export default function Profile() {
 
   const [profileStorageKey, setProfileStorageKey] =
     useState(null);
->>>>>>> Stashed changes
 
   const [isLoadingProfile, setIsLoadingProfile] =
     useState(true);
@@ -287,28 +273,7 @@ export default function Profile() {
       return;
     }
 
-<<<<<<< Updated upstream
-    const saveProfile = async () => {
-      try {
-        await AsyncStorage.setItem(PROFILE_KEY, JSON.stringify(profileData));
-      } catch (err) {
-        console.error("Error saving profile:", err);
-      }
-    };
 
-    saveProfile();
-  }, [profileData]);
-
-  const handleChange = useCallback((field, value) => {
-    setProfileData((prev) => ({ ...prev, [field]: value }));
-  }, []);
-
-  const saveProfile = () => {
-    setEditModalVisible(false);
-    Alert.alert("Success", "Profile saved successfully!");
-  };
-
-=======
     try {
       /*
         Save only to the current user's profile key.
@@ -395,7 +360,6 @@ export default function Profile() {
   ============================================================
   */
 
->>>>>>> Stashed changes
   return (
     <View
       style={dynamicStyles.container}
@@ -442,10 +406,7 @@ export default function Profile() {
             dynamicStyles.cardWrapper
           }
         >
-<<<<<<< Updated upstream
-          <Text style={dynamicStyles.buttonText}>Edit Profile</Text>
-        </Pressable>
-=======
+
           <Profile_Card
             {...profileData}
             visible={!isLoadingProfile}
@@ -525,7 +486,6 @@ export default function Profile() {
         >
           {t("profile.localStorageInfo")}
         </Text>
->>>>>>> Stashed changes
       </ScrollView>
 
       {/* ==========================================================
@@ -935,11 +895,6 @@ export default function Profile() {
    STYLES
 ================================================================ */
 
-<<<<<<< Updated upstream
-  return StyleSheet.create({
-    container: { paddingTop: 4, paddingBottom: 10},
-    
-=======
 const styles = (
   colors,
   insets
@@ -976,7 +931,6 @@ const styles = (
       marginBottom: SPACING.xl,
     },
 
->>>>>>> Stashed changes
     header: {
       fontSize: 28,
       fontWeight: "800",

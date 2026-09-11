@@ -1,12 +1,4 @@
-<<<<<<< Updated upstream
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
-=======
 import React from "react";
->>>>>>> Stashed changes
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
@@ -24,12 +16,6 @@ export default function RootLayout() {
   return (
     <LanguageProvider>
       <Stack>
-<<<<<<< Updated upstream
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="modal"
-          options={{ presentation: "modal", title: "Modal" }}
-=======
         <Stack.Screen
           name="(tabs)"
           options={{
@@ -43,7 +29,6 @@ export default function RootLayout() {
             presentation: "modal",
             title: "Modal",
           }}
->>>>>>> Stashed changes
         />
       </Stack>
 

@@ -4,11 +4,7 @@
 const ENV = {
   dev: {
     // use LAN_IP from .env or fallback
-<<<<<<< Updated upstream
-    API_BASE: "http://192.168.29.252:5000",
-=======
     API_BASE: "http://192.168.0.170:5000",
->>>>>>> Stashed changes
     // API_BASE: "http://medi-query.onrender.com", // 👈 replace with your LAN IPv4 from ipconfig
   },
   prod: {
