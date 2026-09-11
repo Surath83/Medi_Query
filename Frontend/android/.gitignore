@@ -12,5 +12,11 @@ local.properties
 *.hprof
 .cxx/
 
+<<<<<<< Updated upstream
+=======
+# generated inline modules
+app/src/main/java/inline/
+
+>>>>>>> Stashed changes
 # Bundle artifacts
 *.jsbundle

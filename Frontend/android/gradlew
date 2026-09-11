@@ -1,7 +1,11 @@
 #!/bin/sh
 
 #
+<<<<<<< Updated upstream
 # Copyright © 2015-2021 the original authors.
+=======
+# Copyright © 2015 the original authors.
+>>>>>>> Stashed changes
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -114,7 +118,10 @@ case "$( uname )" in                #(
   NONSTOP* )        nonstop=true ;;
 esac
 
+<<<<<<< Updated upstream
 CLASSPATH="\\\"\\\""
+=======
+>>>>>>> Stashed changes
 
 
 # Determine the Java command to use to start the JVM.
@@ -172,7 +179,10 @@ fi
 # For Cygwin or MSYS, switch paths to Windows format before running java
 if "$cygwin" || "$msys" ; then
     APP_HOME=$( cygpath --path --mixed "$APP_HOME" )
+<<<<<<< Updated upstream
     CLASSPATH=$( cygpath --path --mixed "$CLASSPATH" )
+=======
+>>>>>>> Stashed changes
 
     JAVACMD=$( cygpath --unix "$JAVACMD" )
 
@@ -205,14 +215,21 @@ fi
 DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
 
 # Collect all arguments for the java command:
+<<<<<<< Updated upstream
 #   * DEFAULT_JVM_OPTS, JAVA_OPTS, JAVA_OPTS, and optsEnvironmentVar are not allowed to contain shell fragments,
+=======
+#   * DEFAULT_JVM_OPTS, JAVA_OPTS, and optsEnvironmentVar are not allowed to contain shell fragments,
+>>>>>>> Stashed changes
 #     and any embedded shellness will be escaped.
 #   * For example: A user cannot expect ${Hostname} to be expanded, as it is an environment variable and will be
 #     treated as '${Hostname}' itself on the command line.
 
 set -- \
         "-Dorg.gradle.appname=$APP_BASE_NAME" \
+<<<<<<< Updated upstream
         -classpath "$CLASSPATH" \
+=======
+>>>>>>> Stashed changes
         -jar "$APP_HOME/gradle/wrapper/gradle-wrapper.jar" \
         "$@"
 

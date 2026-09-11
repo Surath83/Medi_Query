@@ -8,10 +8,13 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { useTranslation } from "@/constants/i18n";
 
-export default function ProfileCard({name, age, height, weight, gender}) {
-  const colorScheme = useColorScheme(); // light or dark
+export default function ProfileCard({ name, age, height, weight, gender }) {
+  const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
+
+  const { t } = useTranslation();
 
   const [visible, setVisible] = useState(true);
 
@@ -29,13 +32,22 @@ export default function ProfileCard({name, age, height, weight, gender}) {
 
   return (
     <LinearGradient
-      colors={isDark ? ["#0F172A", "#1E293B"] : ["#D6E4FF", "#F0F9FF"]}
+      colors={
+        isDark
+          ? ["#0F172A", "#1E293B"]
+          : ["#D6E4FF", "#F0F9FF"]
+      }
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={styles.card}
     >
       <View style={styles.headerRow}>
-        <Text style={[styles.name, { color: isDark ? "#E0E7FF" : "#1E293B" }]}>
+        <Text
+          style={[
+            styles.name,
+            { color: isDark ? "#E0E7FF" : "#1E293B" },
+          ]}
+        >
           {name}
         </Text>
 
@@ -51,18 +63,42 @@ export default function ProfileCard({name, age, height, weight, gender}) {
         </Pressable>
       </View>
 
-      <Text style={[styles.text, { color: isDark ? "#CBD5E1" : "#334155" }]}>
+      <Text
+        style={[
+          styles.text,
+          { color: isDark ? "#CBD5E1" : "#334155" },
+        ]}
+      >
         {visible
-          ? `Age: ${age} yr     Ht: ${height} cm      Wt: ${weight} kg`
-          : "Age: .. yr       Ht: .... cm         Wt: .. kg"}
+          ? `${t("profile.age")}: ${age} ${t("profile.year")}     ${t(
+              "profile.height"
+            )}: ${height} ${t("profile.cm")}      ${t(
+              "profile.weight"
+            )}: ${weight} ${t("profile.kg")}`
+          : `${t("profile.age")}: .. ${t(
+              "profile.year"
+            )}       ${t("profile.height")}: .... ${
+              t("profile.cm")
+            }         ${t("profile.weight")}: .. ${t("profile.kg")}`}
       </Text>
 
-      <Text style={[styles.text, { color: isDark ? "#CBD5E1" : "#334155" }]}>
-        BMI: {bmi}
+      <Text
+        style={[
+          styles.text,
+          { color: isDark ? "#CBD5E1" : "#334155" },
+        ]}
+      >
+        {t("profile.bmi")}: {bmi}
       </Text>
 
-      <Text style={[styles.text, { color: isDark ? "#CBD5E1" : "#334155" }]}>
-        BMR: {calculateBMR().toFixed(2)} cal/day
+      <Text
+        style={[
+          styles.text,
+          { color: isDark ? "#CBD5E1" : "#334155" },
+        ]}
+      >
+        {t("profile.bmr")}: {calculateBMR().toFixed(2)}{" "}
+        {t("profile.calPerDay")}
       </Text>
     </LinearGradient>
   );
@@ -79,20 +115,24 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 6,
   },
+
   headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 14,
   },
+
   name: {
     fontSize: 22,
     fontWeight: "700",
   },
+
   text: {
     fontSize: 16,
     marginVertical: 6,
   },
+
   eyeButton: {
     padding: 6,
     borderRadius: 50,

@@ -2,6 +2,9 @@
   <color name="splashscreen_background">#ffffff</color>
   <color name="iconBackground">#FFFFFF</color>
   <color name="colorPrimary">#023c69</color>
+<<<<<<< Updated upstream
   <color name="colorPrimaryDark">#ffffff</color>
+=======
+>>>>>>> Stashed changes
   <color name="notification_icon_color">#0EA5A4</color>
 </resources>

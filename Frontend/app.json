@@ -2,43 +2,57 @@
   "expo": {
     "name": "MediQuery",
     "slug": "mediquery",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/images/ios-icon.png",
     "scheme": "mediquery",
     "userInterfaceStyle": "automatic",
+<<<<<<< Updated upstream
     "newArchEnabled": true,
     "notification": {
       "icon": "./assets/images/ios-icon.png",
       "color": "#0EA5A4",
       "iosDisplayInForeground": true
     },
+=======
+>>>>>>> Stashed changes
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.surath83.mediquery",
-      "icon": "./assets/images/ios-icon.png",
-      "jsEngine": "hermes",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "We need your location to show nearby pharmacies."
       }
     },
     "android": {
+      "package": "com.surath83.mediquery",
       "adaptiveIcon": {
         "backgroundColor": "#FFFFFF",
         "foregroundImage": "./assets/images/android-icon.png"
       },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false,
-      "package": "com.surath83.mediquery",
-      "jsEngine": "hermes"
+      "predictiveBackGestureEnabled": false
     },
     "web": {
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-dev-client",
       "expo-router",
+      "expo-dev-client",
+      "expo-web-browser",
+      "expo-secure-store",
+      [
+        "react-native-maps",
+        {
+          "androidGoogleMapsApiKey": "YOUR_GOOGLE_MAPS_API_KEY"
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/ios-icon.png",
+          "color": "#0EA5A4"
+        }
+      ],
       [
         "expo-splash-screen",
         {
@@ -51,21 +65,20 @@
           }
         }
       ],
-      "expo-web-browser",
       [
         "expo-build-properties",
         {
-          "ios": {
-            "useFrameworks": "static"
-          },
           "android": {
             "compileSdkVersion": 36,
             "targetSdkVersion": 36,
             "minSdkVersion": 24
+          },
+          "ios": {
+            "useFrameworks": "static"
           }
         }
       ],
-      "expo-secure-store"
+      "expo-image"
     ],
     "experiments": {
       "typedRoutes": true,
@@ -77,7 +90,6 @@
         "projectId": "e863d94d-75db-4dc6-bebc-7c0fcf6e614a"
       }
     },
-    "jsEngine": "hermes",
     "owner": "sur933"
   }
 }

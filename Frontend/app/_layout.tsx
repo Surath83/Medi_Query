@@ -1,26 +1,55 @@
+<<<<<<< Updated upstream
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
+=======
+import React from "react";
+>>>>>>> Stashed changes
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
-import { useColorScheme } from "@/hooks/use-color-scheme";
 
-export const unstable_settings = { anchor: "(tabs)" };
+import { useTheme } from "@/constants/theme";
+import { LanguageProvider } from "@/constants/i18n";
+
+export const unstable_settings = {
+  anchor: "(tabs)",
+};
+
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const { isDark } = useTheme();
+
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+    <LanguageProvider>
       <Stack>
+<<<<<<< Updated upstream
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
           name="modal"
           options={{ presentation: "modal", title: "Modal" }}
+=======
+        <Stack.Screen
+          name="(tabs)"
+          options={{
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name="modal"
+          options={{
+            presentation: "modal",
+            title: "Modal",
+          }}
+>>>>>>> Stashed changes
         />
       </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+
+      <StatusBar
+        style={isDark ? "light" : "dark"}
+      />
+    </LanguageProvider>
   );
 }
