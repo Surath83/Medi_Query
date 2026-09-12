@@ -7,10 +7,10 @@ import {
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
 
-import { HapticTab } from "@/components/haptic-tab";
-import { IconSymbol } from "@/components/ui/icon-symbol";
-import { useTheme } from "@/constants/theme";
-import { useTranslation } from "@/constants/i18n";
+import { HapticTab } from "../../components/haptic-tab";
+import { IconSymbol } from "../../components/ui/icon-symbol";
+import { useTheme } from "../../constants/theme";
+import { useTranslation } from "../../constants/i18n";
 
 export default function TabLayout() {
   const { colors } = useTheme();

@@ -1,6 +1,39 @@
-Frontend/.expo/
-Frontend/.expo-shared/
-Frontend/node_modules/
-Frontend/.vscode/
-Frontend/expo-env.d.ts
-Backend/node_modules/
+# Dependencies
+node_modules/
+
+# Lock files
+package-lock.json
+
+# Expo
+.expo/
+.expo-shared/
+
+# Cursor
+.cursor/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Expo generated
+expo-env.d.ts
+
+# Logs
+npm-debug.log
+yarn-error.log
+*.log
+
+# Build / distribution
+dist/
+build/
+coverage/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
