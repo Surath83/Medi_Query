@@ -7,7 +7,12 @@
     "icon": "./assets/images/ios-icon.png",
     "scheme": "mediquery",
     "userInterfaceStyle": "automatic",
-
+    "newArchEnabled": true,
+    "notification": {
+      "icon": "./assets/images/ios-icon.png",
+      "color": "#0EA5A4",
+      "iosDisplayInForeground": true
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.surath83.mediquery",

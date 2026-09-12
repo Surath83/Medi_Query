@@ -62,7 +62,6 @@ export default function Profile() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
-
   const dynamicStyles = styles(
     colors,
     insets
@@ -272,7 +271,6 @@ export default function Profile() {
 
       return;
     }
-
 
     try {
       /*

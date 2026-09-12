@@ -78,20 +78,19 @@ export default function TabLayout() {
     return null;
   }
 
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
 
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textLight,
 
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textSecondary,
         tabBarStyle: {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
-          borderTopWidth: 1,
         },
-
         tabBarButton: HapticTab,
       }}
     >
@@ -101,6 +100,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: t("tabs.home"),
+
           tabBarIcon: ({ color }) => (
             <IconSymbol
               size={28}
@@ -111,7 +111,6 @@ export default function TabLayout() {
         }}
       />
 
-      {/* MAPS */}
       {Platform.OS !== "web" && (
         <Tabs.Screen
           name="maps"
@@ -128,7 +127,6 @@ export default function TabLayout() {
         />
       )}
 
-      {/* REMINDER */}
       <Tabs.Screen
         name="reminder"
         options={{
@@ -143,7 +141,6 @@ export default function TabLayout() {
         }}
       />
 
-      {/* PROFILE */}
       <Tabs.Screen
         name="profile"
         options={{

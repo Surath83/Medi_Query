@@ -28,7 +28,6 @@ export default function HomeScreen() {
   // THEME
   // =======================================================
 
-
   const { colors, isDark } = useTheme();
 
   // =======================================================
