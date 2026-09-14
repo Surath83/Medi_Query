@@ -7,7 +7,6 @@
     "icon": "./assets/images/ios-icon.png",
     "scheme": "mediquery",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "notification": {
       "icon": "./assets/images/ios-icon.png",
       "color": "#0EA5A4",
